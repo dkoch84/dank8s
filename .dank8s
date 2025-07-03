@@ -1,0 +1,461 @@
+function kubehelp {
+  RED="$(tput setaf 1)"
+  GREEN="$(tput setaf 2)"
+  LGREEN="$(tput bold; tput setaf 2)"
+  PURPLE="$(tput setaf 5)"
+  LPURPLE="$(tput bold; tput setaf 5)"
+  YELLOW="$(tput bold; tput setaf 3)"
+  BLUE="$(tput setaf 4)"
+  LBLUE="$(tput bold; tput setaf 4)"
+  NC="$(tput sgr0)"
+  BOLD="$(tput bold)"
+  cat <<EOF
+${BOLD}Kubernetes Shell Helpers:
+
+${LBLUE}${BOLD}Namespace & Utility:${NC}
+
+  ns <namespace>
+      Set the current kubectl namespace.
+
+  refresh <command>
+      Clear the screen and run the given command.
+
+${LBLUE}${BOLD}Listing Resources:${NC}
+
+  pods [args...]
+      List pods in the current namespace. Passes any extra args to kubectl.
+  deployments [args...]
+      List deployments in the current namespace. Passes any extra args to kubectl.
+  services [args...]
+      List services in the current namespace. Passes any extra args to kubectl.
+  nodes [args...]
+      List cluster nodes. Passes any extra args to kubectl.
+  events [args...]
+      List events in the current namespace, sorted by creation time. Passes any extra args to kubectl.
+  ingresses [args...]
+      List ingresses in the current namespace. Passes any extra args to kubectl.
+  endpoints [args...]
+      List endpoints in the current namespace. Passes any extra args to kubectl.
+  configmaps [args...]
+      List configmaps in the current namespace. Passes any extra args to kubectl.
+  secrets [args...]
+      List secrets in the current namespace. Passes any extra args to kubectl.
+  certificates [args...]
+      List certificates in the current namespace. Passes any extra args to kubectl.
+  issuers [args...]
+      List issuers in the current namespace. Passes any extra args to kubectl.
+  orders [args...]
+      List orders in the current namespace. Passes any extra args to kubectl.
+
+${LBLUE}${BOLD}Diving Deeper:${NC}
+
+  pod <pod-name> [args...]
+      Show info for a pod (namespace auto-detected). Prompts to describe the pod.
+  deployment <deployment-name> [args...]
+      Show info for a deployment (namespace auto-detected). Prompts to describe the deployment.
+  service <service-name> [args...]
+      Show info for a service (namespace auto-detected). Prompts to describe the service.
+  node <node-name> [args...]
+      Show info for a node. Prompts to describe the node.
+  ingress <ingress-name> [args...]
+      Show info for an ingress (namespace auto-detected). Prompts to describe the ingress.
+  endpoint <endpoint-name> [args...]
+      Show info for an endpoint (namespace auto-detected). Prompts to describe the endpoint.
+  configmap <configmap-name> [args...]
+      Show info for a configmap (namespace auto-detected). Prompts to describe the configmap.
+  secret <secret-name> [args...]
+      Show info for a secret (namespace auto-detected). Prompts to describe the secret.
+  certificate <certificate-name> [args...]
+      Show info for a certificate (namespace auto-detected). Prompts to describe the certificate.
+  issuer <issuer-name> [args...]
+      Show info for an issuer (namespace auto-detected). Prompts to describe the issuer.
+  order <order-name> [args...]
+      Show info for an order (namespace auto-detected). Prompts to describe the order.
+
+${LBLUE}${BOLD}Shell & Watch:${NC}
+
+  exec <pod-name>
+      Open a shell in the specified pod (namespace auto-detected). Tries /bin/bash, falls back to /bin/sh if bash is unavailable.
+  watch <pods|deployments|services|nodes|events|ingresses|endpoints|configmaps|secrets|certificates|issuers|orders|custom kubectl command>
+      Continuously refresh and display the specified resource or custom command every second, with color output (uses kubecolor if aliased).
+
+${LBLUE}${BOLD}Helper Management:${NC}
+
+  unkube
+      Unset all helper functions and aliases.
+  kubehelp
+      Show this help message.
+EOF
+}
+
+function unkube {
+  unset ns
+  unset refresh
+  unset watch
+  unset pods
+  unset deployments
+  unset services
+  unset nodes
+  unset events
+  unset pod
+  unset deployment
+  unset service
+  unset node
+  unset exec
+  unset khelper
+  unset kubehelp
+  unset unkube
+  unset ingresses
+  unset ingress
+  unset endpoints
+  unset endpoint
+  unset configmaps
+  unset configmap
+  unset secrets
+  unset secret
+  unset certificates
+  unset certificate
+  unset issuers
+  unset issuer
+  unset orders
+  unset order
+}
+
+function pluralize_resource {
+  declare -A plurals=(
+    [ingress]="ingresses"
+    [endpoint]="endpoints"
+    [configmap]="configmaps"
+    [secret]="secrets"
+    [pod]="pods"
+    [deployment]="deployments"
+    [service]="services"
+    [node]="nodes"
+    [certificate]="certificates"
+    [issuer]="issuers"
+    [order]="orders"
+  )
+  local singular="$1"
+  echo "${plurals[$singular]:-${singular}s}"
+}
+
+function ns {
+  kubectl config set-context --current --namespace="$1"
+}
+
+function refresh {
+  tput clear;
+  bash -ic "$@";
+}
+
+function khelper {
+  local resource
+  if [ "${FUNCNAME[1]}" != "exec" ] && [ "${FUNCNAME[1]}" != "logs" ]; then
+    resource=$(pluralize_resource "${FUNCNAME[1]}")
+    data=$(kubectl get "$resource" -A --no-headers)
+  else
+    data=$(kubectl get pods -A --no-headers)
+  fi
+  echo "$(awk -v name="$1" '$2 == name {print $1}' <<< "$data")"
+}
+
+function watch {
+  case "$1" in
+    "pods")
+      CMD="kubectl get pods ${@:2} --force-colors"
+      ;;
+    "deployments")
+      CMD="kubectl get deployments ${@:2} --force-colors"
+      ;;
+    "services")
+      CMD="kubectl get services ${@:2} --force-colors"
+      ;;
+    "nodes")
+      CMD="kubectl get nodes ${@:2} --force-colors"
+      ;;
+    "events")
+      CMD="kubectl get events --sort-by=.metadata.creationTimestamp ${@:2} --force-colors"
+      ;;
+    "ingresses")
+      CMD="kubectl get ingresses ${@:2} --force-colors"
+      ;;
+    "endpoints")
+      CMD="kubectl get endpoints ${@:2} --force-colors"
+      ;;
+    "configmaps")
+      CMD="kubectl get configmaps ${@:2} --force-colors"
+      ;;
+    "secrets")
+      CMD="kubectl get secrets ${@:2} --force-colors"
+      ;;
+    "certificates")
+      CMD="kubectl get certificates ${@:2} --force-colors"
+      ;;
+    "issuers")
+      CMD="kubectl get issuers ${@:2} --force-colors"
+      ;;
+    "orders")
+      CMD="kubectl get orders ${@:2} --force-colors"
+      ;;
+    *)
+      CMD="$@"
+      ;;
+  esac
+  while true; do
+    output=`refresh "$CMD"`;
+    printf '%s' "$output";
+    sleep 1;
+  done;
+}
+
+function exec {
+  namespace=$(khelper "$1")
+  if ! kubectl exec -it -n "${namespace}" "$1" -- /bin/bash 2>/dev/null; then
+    echo "Falling back to /bin/sh..."
+    kubectl exec -it -n "${namespace}" "$1" -- /bin/sh
+  fi
+}
+
+function pods {
+  kubectl get pods ${@:1}
+}
+
+function deployments {
+  kubectl get deployments ${@:1}
+}
+
+function services {
+  kubectl get services ${@:1}
+}
+
+function nodes {
+  kubectl get nodes ${@:1}
+}
+
+function events {
+  kubectl get events --sort-by=.metadata.creationTimestamp ${@:1}
+}
+
+function ingresses {
+  kubectl get ingresses ${@:1}
+}
+
+function endpoints {
+  kubectl get endpoints ${@:1}
+}
+
+function configmaps {
+  kubectl get configmaps ${@:1}
+}
+
+function secrets {
+  kubectl get secrets ${@:1}
+}
+
+function certificates {
+  kubectl get certificates ${@:1}
+}
+
+function issuers {
+  kubectl get issuers ${@:1}
+}
+
+function orders {
+  kubectl get orders ${@:1}
+}
+
+function pod {
+  namespace=$(khelper "$1")
+  kubectl get pod -n "${namespace}" "$1" ${@:2}
+
+  echo "What would you like to do with this pod?"
+  select action in "Nothing" "Describe" "YAML" "Edit" "Delete"; do
+    case $action in
+      Nothing ) break;;
+      Describe ) kubectl describe pod -n "${namespace}" "$1"; break;;
+      YAML ) kubectl get pod -n "${namespace}" "$1" -o yaml; break;;
+      Edit ) kubectl edit pod -n "${namespace}" "$1"; break;;
+      Delete ) echo "Are you sure you want to delete pod $1 in namespace $namespace? (yes/no)"; read confirm; if [ "$confirm" = "yes" ]; then kubectl delete pod -n "${namespace}" "$1"; fi; break;;
+    esac
+  done
+}
+
+function deployment {
+  namespace=$(khelper "$1")
+  kubectl get deployment -n "${namespace}" "$1" ${@:2}
+
+  echo "What would you like to do with this deployment?"
+  select action in "Nothing" "Describe" "YAML" "Edit" "Delete" "Restart"; do
+    case $action in
+      Nothing ) break;;
+      Describe ) kubectl describe deployment -n "${namespace}" "$1"; break;;
+      YAML ) kubectl get deployment -n "${namespace}" "$1" -o yaml; break;;
+      Edit ) kubectl edit deployment -n "${namespace}" "$1"; break;;
+      Delete ) echo "Are you sure you want to delete deployment $1 in namespace $namespace? (yes/no)"; read confirm; if [ "$confirm" = "yes" ]; then kubectl delete deployment -n "${namespace}" "$1"; fi; break;;
+      Restart ) kubectl rollout restart deployment -n "${namespace}" "$1"; break;;
+    esac
+  done
+}
+
+function service {
+  namespace=$(khelper "$1")
+  kubectl get service -n "${namespace}" "$1" ${@:2}
+
+  echo "What would you like to do with this service?"
+  select action in "Nothing" "Describe" "YAML" "Edit" "Delete"; do
+    case $action in
+      Nothing ) break;;
+      Describe ) kubectl describe service -n "${namespace}" "$1"; break;;
+      YAML ) kubectl get service -n "${namespace}" "$1" -o yaml; break;;
+      Edit ) kubectl edit service -n "${namespace}" "$1"; break;;
+      Delete ) echo "Are you sure you want to delete service $1 in namespace $namespace? (yes/no)"; read confirm; if [ "$confirm" = "yes" ]; then kubectl delete service -n "${namespace}" "$1"; fi; break;;
+    esac
+  done
+}
+
+function ingress {
+  namespace=$(khelper "$1")
+  kubectl get ingress -n "${namespace}" "$1" ${@:2}
+
+  echo "What would you like to do with this ingress?"
+  select action in "Nothing" "Describe" "YAML" "Edit" "Delete"; do
+    case $action in
+      Nothing ) break;;
+      Describe ) kubectl describe ingress -n "${namespace}" "$1"; break;;
+      YAML ) kubectl get ingress -n "${namespace}" "$1" -o yaml; break;;
+      Edit ) kubectl edit ingress -n "${namespace}" "$1"; break;;
+      Delete ) echo "Are you sure you want to delete ingress $1 in namespace $namespace? (yes/no)"; read confirm; if [ "$confirm" = "yes" ]; then kubectl delete ingress -n "${namespace}" "$1"; fi; break;;
+    esac
+  done
+}
+
+function endpoint {
+  namespace=$(khelper "$1")
+  kubectl get endpoint -n "${namespace}" "$1" ${@:2}
+
+  echo "What would you like to do with this endpoint?"
+  select action in "Nothing" "Describe" "YAML" "Edit" "Delete"; do
+    case $action in
+      Nothing ) break;;
+      Describe ) kubectl describe endpoint -n "${namespace}" "$1"; break;;
+      YAML ) kubectl get endpoint -n "${namespace}" "$1" -o yaml; break;;
+      Edit ) kubectl edit endpoint -n "${namespace}" "$1"; break;;
+      Delete ) echo "Are you sure you want to delete endpoint $1 in namespace $namespace? (yes/no)"; read confirm; if [ "$confirm" = "yes" ]; then kubectl delete endpoint -n "${namespace}" "$1"; fi; break;;
+    esac
+  done
+}
+
+function configmap {
+  namespace=$(khelper "$1")
+  kubectl get configmap -n "${namespace}" "$1" ${@:2}
+
+  echo "What would you like to do with this configmap?"
+  select action in "Nothing" "Describe" "YAML" "Edit" "Delete" "Recreate"; do
+    case $action in
+      Nothing ) break;;
+      Describe ) kubectl describe configmap -n "${namespace}" "$1"; break;;
+      YAML ) kubectl get configmap -n "${namespace}" "$1" -o yaml; break;;
+      Edit ) kubectl edit configmap -n "${namespace}" "$1"; break;;
+      Delete ) echo "Are you sure you want to delete configmap $1 in namespace $namespace? (yes/no)"; read confirm; if [ "$confirm" = "yes" ]; then kubectl delete configmap -n "${namespace}" "$1"; fi; break;;
+      Recreate ) echo "Are you sure you want to recreate configmap $1 in namespace $namespace? (yes/no)"; read confirm; if [ "$confirm" = "yes" ]; then echo "Enter path to file:"; read file; kubectl create configmap "$1" -n "${namespace}" --from-file="$file" --dry-run=client -o yaml | kubectl apply -f -; fi; break;;
+    esac
+  done
+}
+
+function secret {
+  namespace=$(khelper "$1")
+  kubectl get secret -n "${namespace}" "$1" ${@:2}
+
+  echo "What would you like to do with this secret?"
+  select yn in "Nothing" "Decode" "Delete" "Recreate"; do
+    case $yn in
+      Nothing ) break;;
+      Decode ) kubectl get secret -n "${namespace}" "$1" -o jsonpath='{.data.*}' | base64 -d; break;;
+      Delete ) echo "Are you sure you want to delete secret $1 in namespace $namespace? (yes/no)"; read confirm; if [ "$confirm" = "yes" ]; then kubectl delete secret -n "${namespace}" "$1"; fi; break;;
+      Recreate ) echo "Are you sure you want to recreate secret $1 in namespace $namespace? (yes/no)"; read confirm; if [ "$confirm" = "yes" ]; then echo "Enter key:"; read key; echo "Enter value:"; read value; kubectl delete secret -n "${namespace}" "$1"; kubectl create secret generic "$1" -n "${namespace}" --from-literal="$key"="$value"; fi; break;;
+    esac
+  done
+}
+
+function certificate {
+  namespace=$(khelper "$1")
+  kubectl get certificate -n "${namespace}" "$1" ${@:2}
+
+  echo "What would you like to do with this certificate?"
+  select action in "Nothing" "Describe" "YAML" "Delete"; do
+    case $action in
+      Nothing ) break;;
+      Describe ) kubectl describe certificate -n "${namespace}" "$1"; break;;
+      YAML ) kubectl get certificate -n "${namespace}" "$1" -o yaml; break;;
+      Delete ) echo "Are you sure you want to delete certificate $1 in namespace $namespace? (yes/no)"; read confirm; if [ "$confirm" = "yes" ]; then kubectl delete certificate -n "${namespace}" "$1"; fi; break;;
+    esac
+  done
+}
+
+function issuer {
+  namespace=$(khelper "$1")
+  kubectl get issuer -n "${namespace}" "$1" ${@:2}
+
+  echo "What would you like to do with this issuer?"
+  select action in "Nothing" "Describe" "YAML" "Edit" "Delete"; do
+    case $action in
+      Nothing ) break;;
+      Describe ) kubectl describe issuer -n "${namespace}" "$1"; break;;
+      YAML ) kubectl get issuer -n "${namespace}" "$1" -o yaml; break;;
+      Edit ) kubectl edit issuer -n "${namespace}" "$1"; break;;
+      Delete ) echo "Are you sure you want to delete issuer $1 in namespace $namespace? (yes/no)"; read confirm; if [ "$confirm" = "yes" ]; then kubectl delete issuer -n "${namespace}" "$1"; fi; break;;
+    esac
+  done
+}
+
+function order {
+  namespace=$(khelper "$1")
+  kubectl get order -n "${namespace}" "$1" ${@:2}
+
+  echo "What would you like to do with this order?"
+  select action in "Nothing" "Describe" "YAML" "Edit" "Delete"; do
+    case $action in
+      Nothing ) break;;
+      Describe ) kubectl describe order -n "${namespace}" "$1"; break;;
+      YAML ) kubectl get order -n "${namespace}" "$1" -o yaml; break;;
+      Edit ) kubectl edit order -n "${namespace}" "$1"; break;;
+      Delete ) echo "Are you sure you want to delete order $1 in namespace $namespace? (yes/no)"; read confirm; if [ "$confirm" = "yes" ]; then kubectl delete order -n "${namespace}" "$1"; fi; break;;
+    esac
+  done
+}
+
+function logs {
+  namespace=$(khelper "$1")
+  kubectl logs -n "${namespace}" "$1" ${@:2}
+
+  echo "What would you like to do with these logs?"
+  select action in "Nothing" "Follow" "Pager"; do
+    case $action in
+      Nothing ) break;;
+      Follow ) kubectl logs -n "${namespace}" "$1" -f ${@:2}; break;;
+      Pager ) kubectl logs -n "${namespace}" "$1" ${@:2} --force-colors | less -R; break;;
+    esac
+  done
+}
+
+function node {
+  kubectl get node "$1" ${@:2}
+
+  echo "Do you want to describe this node?"
+  select yn in "Nothing" "Yes"; do
+    case $yn in
+      Nothing ) break;;
+      Describe ) kubectl describe node "$1"; break;;
+
+    esac
+  done
+}
+
+function install-nginx {
+  helm repo update
+  helm install ingress-nginx ingress-nginx/ingress-nginx \
+    --create-namespace \
+    --namespace ingress-nginx \
+    --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz
+}
+
