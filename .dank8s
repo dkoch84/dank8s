@@ -17,6 +17,9 @@ ${LBLUE}${BOLD}Namespace & Utility:${NC}
   ns <namespace>
       Set the current kubectl namespace.
 
+  kubeall <on|off>
+      Toggle all-namespaces mode. When on, listing commands show resources from all namespaces by default.
+
   refresh <command>
       Clear the screen and run the given command.
 
@@ -24,60 +27,105 @@ ${LBLUE}${BOLD}Listing Resources:${NC}
 
   pods [args...]
       List pods in the current namespace. Passes any extra args to kubectl.
-  deployments [args...]
+  deployments, deps [args...]
       List deployments in the current namespace. Passes any extra args to kubectl.
-  services [args...]
+  services, svcs [args...]
       List services in the current namespace. Passes any extra args to kubectl.
   nodes [args...]
       List cluster nodes. Passes any extra args to kubectl.
   events [args...]
       List events in the current namespace, sorted by creation time. Passes any extra args to kubectl.
-  ingresses [args...]
+  ingresses, ings [args...]
       List ingresses in the current namespace. Passes any extra args to kubectl.
-  endpoints [args...]
+  endpoints, eps [args...]
       List endpoints in the current namespace. Passes any extra args to kubectl.
-  configmaps [args...]
+  configmaps, cms [args...]
       List configmaps in the current namespace. Passes any extra args to kubectl.
   secrets [args...]
       List secrets in the current namespace. Passes any extra args to kubectl.
-  certificates [args...]
+  certificates, certs [args...]
       List certificates in the current namespace. Passes any extra args to kubectl.
   issuers [args...]
       List issuers in the current namespace. Passes any extra args to kubectl.
   orders [args...]
       List orders in the current namespace. Passes any extra args to kubectl.
+  daemonsets, ds [args...]
+      List daemonsets in the current namespace. Passes any extra args to kubectl.
+  statefulsets, sts [args...]
+      List statefulsets in the current namespace. Passes any extra args to kubectl.
+  jobs [args...]
+      List jobs in the current namespace. Passes any extra args to kubectl.
+  cronjobs, cjs [args...]
+      List cronjobs in the current namespace. Passes any extra args to kubectl.
+  replicasets, rs [args...]
+      List replicasets in the current namespace. Passes any extra args to kubectl.
+  persistentvolumeclaims, pvcs [args...]
+      List PVCs in the current namespace. Passes any extra args to kubectl.
+  persistentvolumes, pvs [args...]
+      List PVs (cluster-wide). Passes any extra args to kubectl.
+  storageclasses, sc [args...]
+      List storage classes (cluster-wide). Passes any extra args to kubectl.
+  networkpolicies, netpols [args...]
+      List network policies in the current namespace. Passes any extra args to kubectl.
+  serviceaccounts, sas [args...]
+      List service accounts in the current namespace. Passes any extra args to kubectl.
+  namespaces, nss [args...]
+      List namespaces (cluster-wide). Passes any extra args to kubectl.
 
 ${LBLUE}${BOLD}Diving Deeper:${NC}
 
   pod <pod-name> [args...]
       Show info for a pod (namespace auto-detected). Prompts to describe the pod.
-  deployment <deployment-name> [args...]
+  deployment, dep <deployment-name> [args...]
       Show info for a deployment (namespace auto-detected). Prompts to describe the deployment.
-  service <service-name> [args...]
+  service, svc <service-name> [args...]
       Show info for a service (namespace auto-detected). Prompts to describe the service.
   node <node-name> [args...]
       Show info for a node. Prompts to describe the node.
-  ingress <ingress-name> [args...]
+  ingress, ing <ingress-name> [args...]
       Show info for an ingress (namespace auto-detected). Prompts to describe the ingress.
-  endpoint <endpoint-name> [args...]
+  endpoint, ep <endpoint-name> [args...]
       Show info for an endpoint (namespace auto-detected). Prompts to describe the endpoint.
-  configmap <configmap-name> [args...]
+  configmap, cm <configmap-name> [args...]
       Show info for a configmap (namespace auto-detected). Prompts to describe the configmap.
   secret <secret-name> [args...]
       Show info for a secret (namespace auto-detected). Prompts to describe the secret.
-  certificate <certificate-name> [args...]
+  certificate, cert <certificate-name> [args...]
       Show info for a certificate (namespace auto-detected). Prompts to describe the certificate.
   issuer <issuer-name> [args...]
       Show info for an issuer (namespace auto-detected). Prompts to describe the issuer.
   order <order-name> [args...]
       Show info for an order (namespace auto-detected). Prompts to describe the order.
+  daemonset, ds <daemonset-name> [args...]
+      Show info for a daemonset (namespace auto-detected). Prompts to describe the daemonset.
+  statefulset, sts <statefulset-name> [args...]
+      Show info for a statefulset (namespace auto-detected). Prompts to describe the statefulset.
+  job <job-name> [args...]
+      Show info for a job (namespace auto-detected). Prompts to describe the job.
+  cronjob, cj <cronjob-name> [args...]
+      Show info for a cronjob (namespace auto-detected). Prompts to describe the cronjob.
+  replicaset, rs <replicaset-name> [args...]
+      Show info for a replicaset (namespace auto-detected). Prompts to describe the replicaset.
+  persistentvolumeclaim, pvc <pvc-name> [args...]
+      Show info for a PVC (namespace auto-detected). Prompts to describe the PVC.
+  persistentvolume, pv <pv-name> [args...]
+      Show info for a PV. Prompts to describe the PV.
+  storageclass <storageclass-name> [args...]
+      Show info for a storage class. Prompts to describe the storage class.
+  networkpolicy, netpol <netpol-name> [args...]
+      Show info for a network policy (namespace auto-detected). Prompts to describe the network policy.
+  serviceaccount, sa <sa-name> [args...]
+      Show info for a service account (namespace auto-detected). Prompts to describe the service account.
+  namespace <namespace-name> [args...]
+      Show info for a namespace. Prompts to describe the namespace.
 
 ${LBLUE}${BOLD}Shell & Watch:${NC}
 
   exec <pod-name>
       Open a shell in the specified pod (namespace auto-detected). Tries /bin/bash, falls back to /bin/sh if bash is unavailable.
-  watch <pods|deployments|services|nodes|events|ingresses|endpoints|configmaps|secrets|certificates|issuers|orders|custom kubectl command>
-      Continuously refresh and display the specified resource or custom command every second, with color output (uses kubecolor if aliased).
+  watch <resource-type|custom-command>
+      Continuously refresh and display the specified resource or custom command every second, with color output.
+      Supports all resource types (pods, deployments, daemonsets, etc.) or any custom kubectl command.
 
 ${LBLUE}${BOLD}Helper Management:${NC}
 
@@ -85,6 +133,8 @@ ${LBLUE}${BOLD}Helper Management:${NC}
       Unset all helper functions and aliases.
   kubehelp
       Show this help message.
+  kubeall
+      Show current all-namespaces mode status.
 EOF
 }
 
@@ -93,32 +143,111 @@ function unkube {
   unset refresh
   unset watch
   unset pods
-  unset deployments
-  unset services
-  unset nodes
-  unset events
   unset pod
+  unset deployments
   unset deployment
+  unset deps
+  unset dep
+  unset services
   unset service
+  unset svcs
+  unset svc
+  unset nodes
   unset node
+  unset events
   unset exec
+  unset logs
   unset khelper
   unset kubehelp
   unset unkube
   unset ingresses
   unset ingress
+  unset ings
+  unset ing
   unset endpoints
   unset endpoint
+  unset eps
+  unset ep
   unset configmaps
   unset configmap
+  unset cms
+  unset cm
   unset secrets
   unset secret
   unset certificates
   unset certificate
+  unset certs
+  unset cert
   unset issuers
   unset issuer
   unset orders
   unset order
+  unset daemonsets
+  unset daemonset
+  unset ds
+  unset statefulsets
+  unset statefulset
+  unset sts
+  unset jobs
+  unset job
+  unset cronjobs
+  unset cronjob
+  unset cjs
+  unset cj
+  unset replicasets
+  unset replicaset
+  unset rs
+  unset persistentvolumeclaims
+  unset persistentvolumeclaim
+  unset pvcs
+  unset pvc
+  unset persistentvolumes
+  unset persistentvolume
+  unset pvs
+  unset pv
+  unset storageclasses
+  unset storageclass
+  unset sc
+  unset networkpolicies
+  unset networkpolicy
+  unset netpols
+  unset netpol
+  unset serviceaccounts
+  unset serviceaccount
+  unset sas
+  unset sa
+  unset namespaces
+  unset namespace
+  unset nss
+  unset kubeall
+  unset KUBEALL
+  unset pluralize_resource
+}
+
+function kubeall {
+  case "$1" in
+    "on")
+      export KUBEALL="-A"
+      echo "All-namespaces mode enabled. Commands will show resources from all namespaces by default."
+      ;;
+    "off")
+      export KUBEALL=""
+      echo "All-namespaces mode disabled. Commands will show resources from current namespace."
+      ;;
+    "")
+      if [ -n "$KUBEALL" ]; then
+        echo "All-namespaces mode is ON"
+      else
+        echo "All-namespaces mode is OFF"
+      fi
+      ;;
+    *)
+      echo "Usage: kubeall [on|off]"
+      echo "  on  - Show resources from all namespaces by default"
+      echo "  off - Show resources from current namespace only"
+      echo "  (no args) - Show current status"
+      ;;
+  esac
 }
 
 function pluralize_resource {
@@ -134,6 +263,17 @@ function pluralize_resource {
     [certificate]="certificates"
     [issuer]="issuers"
     [order]="orders"
+    [daemonset]="daemonsets"
+    [statefulset]="statefulsets"
+    [job]="jobs"
+    [cronjob]="cronjobs"
+    [replicaset]="replicasets"
+    [persistentvolumeclaim]="persistentvolumeclaims"
+    [persistentvolume]="persistentvolumes"
+    [storageclass]="storageclasses"
+    [networkpolicy]="networkpolicies"
+    [serviceaccount]="serviceaccounts"
+    [namespace]="namespaces"
   )
   local singular="$1"
   echo "${plurals[$singular]:-${singular}s}"
@@ -162,50 +302,107 @@ function khelper {
 function watch {
   case "$1" in
     "pods")
-      CMD="kubectl get pods ${@:2} --force-colors"
+      CMD="kubectl get pods $KUBEALL ${@:2} --force-colors"
       ;;
     "deployments")
-      CMD="kubectl get deployments ${@:2} --force-colors"
+      CMD="kubectl get deployments $KUBEALL ${@:2} --force-colors"
       ;;
     "services")
-      CMD="kubectl get services ${@:2} --force-colors"
+      CMD="kubectl get services $KUBEALL ${@:2} --force-colors"
       ;;
     "nodes")
       CMD="kubectl get nodes ${@:2} --force-colors"
       ;;
     "events")
-      CMD="kubectl get events --sort-by=.metadata.creationTimestamp ${@:2} --force-colors"
+      CMD="kubectl get events $KUBEALL --sort-by=.metadata.creationTimestamp ${@:2} --force-colors"
       ;;
     "ingresses")
-      CMD="kubectl get ingresses ${@:2} --force-colors"
+      CMD="kubectl get ingresses $KUBEALL ${@:2} --force-colors"
       ;;
     "endpoints")
-      CMD="kubectl get endpoints ${@:2} --force-colors"
+      CMD="kubectl get endpoints $KUBEALL ${@:2} --force-colors"
       ;;
     "configmaps")
-      CMD="kubectl get configmaps ${@:2} --force-colors"
+      CMD="kubectl get configmaps $KUBEALL ${@:2} --force-colors"
       ;;
     "secrets")
-      CMD="kubectl get secrets ${@:2} --force-colors"
+      CMD="kubectl get secrets $KUBEALL ${@:2} --force-colors"
       ;;
     "certificates")
-      CMD="kubectl get certificates ${@:2} --force-colors"
+      CMD="kubectl get certificates $KUBEALL ${@:2} --force-colors"
       ;;
     "issuers")
-      CMD="kubectl get issuers ${@:2} --force-colors"
+      CMD="kubectl get issuers $KUBEALL ${@:2} --force-colors"
       ;;
     "orders")
-      CMD="kubectl get orders ${@:2} --force-colors"
+      CMD="kubectl get orders $KUBEALL ${@:2} --force-colors"
+      ;;
+    "daemonsets"|"ds")
+      CMD="kubectl get daemonsets $KUBEALL ${@:2} --force-colors"
+      ;;
+    "statefulsets"|"sts")
+      CMD="kubectl get statefulsets $KUBEALL ${@:2} --force-colors"
+      ;;
+    "jobs")
+      CMD="kubectl get jobs $KUBEALL ${@:2} --force-colors"
+      ;;
+    "cronjobs"|"cjs")
+      CMD="kubectl get cronjobs $KUBEALL ${@:2} --force-colors"
+      ;;
+    "replicasets"|"rs")
+      CMD="kubectl get replicasets $KUBEALL ${@:2} --force-colors"
+      ;;
+    "persistentvolumeclaims"|"pvcs")
+      CMD="kubectl get persistentvolumeclaims $KUBEALL ${@:2} --force-colors"
+      ;;
+    "persistentvolumes"|"pvs")
+      CMD="kubectl get persistentvolumes ${@:2} --force-colors"
+      ;;
+    "storageclasses"|"sc")
+      CMD="kubectl get storageclasses ${@:2} --force-colors"
+      ;;
+    "networkpolicies"|"netpols")
+      CMD="kubectl get networkpolicies $KUBEALL ${@:2} --force-colors"
+      ;;
+    "serviceaccounts"|"sas")
+      CMD="kubectl get serviceaccounts $KUBEALL ${@:2} --force-colors"
+      ;;
+    "namespaces"|"nss")
+      CMD="kubectl get namespaces ${@:2} --force-colors"
       ;;
     *)
       CMD="$@"
       ;;
   esac
+
+  # Set terminal to non-blocking mode and hide cursor
+  stty -echo -icanon time 0 min 0
+  tput civis
+
+  # Trap to restore terminal settings on exit
+  trap 'stty sane; tput cnorm' EXIT INT TERM
+
   while true; do
-    output=`refresh "$CMD"`;
-    printf '%s' "$output";
+    tput clear
+    echo "Watching $1 - Press 'q' to quit"
+    echo
+    bash -ic "$CMD"
+
+    # Check for 'q' keypress
+    if read -n 1 key && [[ "$key" == "q" ]]; then
+      stty sane
+      tput cnorm
+      echo
+      break
+    fi
+
     sleep 1;
   done;
+
+  # Restore terminal settings
+  stty sane
+  tput cnorm
+  trap - EXIT INT TERM
 }
 
 function exec {
@@ -217,15 +414,15 @@ function exec {
 }
 
 function pods {
-  kubectl get pods ${@:1}
+  kubectl get pods $KUBEALL $@
 }
 
 function deployments {
-  kubectl get deployments ${@:1}
+  kubectl get deployments $KUBEALL $@
 }
 
 function services {
-  kubectl get services ${@:1}
+  kubectl get services $KUBEALL $@
 }
 
 function nodes {
@@ -233,36 +430,114 @@ function nodes {
 }
 
 function events {
-  kubectl get events --sort-by=.metadata.creationTimestamp ${@:1}
+  kubectl get events $KUBEALL --sort-by=.metadata.creationTimestamp $@
 }
 
 function ingresses {
-  kubectl get ingresses ${@:1}
+  kubectl get ingresses $KUBEALL $@
 }
 
 function endpoints {
-  kubectl get endpoints ${@:1}
+  kubectl get endpoints $KUBEALL $@
 }
 
 function configmaps {
-  kubectl get configmaps ${@:1}
+  kubectl get configmaps $KUBEALL $@
 }
 
 function secrets {
-  kubectl get secrets ${@:1}
+  kubectl get secrets $KUBEALL $@
 }
 
 function certificates {
-  kubectl get certificates ${@:1}
+  kubectl get certificates $KUBEALL $@
 }
 
 function issuers {
-  kubectl get issuers ${@:1}
+  kubectl get issuers $KUBEALL $@
 }
 
 function orders {
-  kubectl get orders ${@:1}
+  kubectl get orders $KUBEALL $@
 }
+
+function daemonsets {
+  kubectl get daemonsets $KUBEALL $@
+}
+
+function statefulsets {
+  kubectl get statefulsets $KUBEALL $@
+}
+
+function jobs {
+  kubectl get jobs $KUBEALL $@
+}
+
+function cronjobs {
+  kubectl get cronjobs $KUBEALL $@
+}
+
+function replicasets {
+  kubectl get replicasets $KUBEALL $@
+}
+
+function persistentvolumeclaims {
+  kubectl get persistentvolumeclaims $KUBEALL $@
+}
+
+function persistentvolumes {
+  kubectl get persistentvolumes $@
+}
+
+function storageclasses {
+  kubectl get storageclasses $@
+}
+
+function networkpolicies {
+  kubectl get networkpolicies $KUBEALL $@
+}
+
+function serviceaccounts {
+  kubectl get serviceaccounts $KUBEALL $@
+}
+
+function namespaces {
+  kubectl get namespaces $@
+}
+
+# Shortcuts for listing resources
+function deps { deployments "$@"; }
+function svcs { services "$@"; }
+function ings { ingresses "$@"; }
+function eps { endpoints "$@"; }
+function cms { configmaps "$@"; }
+function certs { certificates "$@"; }
+function ds { daemonsets "$@"; }
+function sts { statefulsets "$@"; }
+function cjs { cronjobs "$@"; }
+function rs { replicasets "$@"; }
+function pvcs { persistentvolumeclaims "$@"; }
+function pvs { persistentvolumes "$@"; }
+function sc { storageclasses "$@"; }
+function netpols { networkpolicies "$@"; }
+function sas { serviceaccounts "$@"; }
+function nss { namespaces "$@"; }
+
+# Shortcuts for individual resources
+function dep { deployment "$@"; }
+function svc { service "$@"; }
+function ing { ingress "$@"; }
+function ep { endpoint "$@"; }
+function cm { configmap "$@"; }
+function cert { certificate "$@"; }
+function ds { daemonset "$@"; }
+function sts { statefulset "$@"; }
+function cj { cronjob "$@"; }
+function rs { replicaset "$@"; }
+function pvc { persistentvolumeclaim "$@"; }
+function pv { persistentvolume "$@"; }
+function netpol { networkpolicy "$@"; }
+function sa { serviceaccount "$@"; }
 
 function pod {
   namespace=$(khelper "$1")
@@ -434,6 +709,183 @@ function logs {
       Nothing ) break;;
       Follow ) kubectl logs -n "${namespace}" "$1" -f ${@:2}; break;;
       Pager ) kubectl logs -n "${namespace}" "$1" ${@:2} --force-colors | less -R; break;;
+    esac
+  done
+}
+
+function daemonset {
+  namespace=$(khelper "$1")
+  kubectl get daemonset -n "${namespace}" "$1" ${@:2}
+
+  echo "What would you like to do with this daemonset?"
+  select action in "Nothing" "Describe" "YAML" "Edit" "Delete" "Restart"; do
+    case $action in
+      Nothing ) break;;
+      Describe ) kubectl describe daemonset -n "${namespace}" "$1"; break;;
+      YAML ) kubectl get daemonset -n "${namespace}" "$1" -o yaml; break;;
+      Edit ) kubectl edit daemonset -n "${namespace}" "$1"; break;;
+      Delete ) echo "Are you sure you want to delete daemonset $1 in namespace $namespace? (yes/no)"; read confirm; if [ "$confirm" = "yes" ]; then kubectl delete daemonset -n "${namespace}" "$1"; fi; break;;
+      Restart ) kubectl rollout restart daemonset -n "${namespace}" "$1"; break;;
+    esac
+  done
+}
+
+function statefulset {
+  namespace=$(khelper "$1")
+  kubectl get statefulset -n "${namespace}" "$1" ${@:2}
+
+  echo "What would you like to do with this statefulset?"
+  select action in "Nothing" "Describe" "YAML" "Edit" "Delete" "Restart"; do
+    case $action in
+      Nothing ) break;;
+      Describe ) kubectl describe statefulset -n "${namespace}" "$1"; break;;
+      YAML ) kubectl get statefulset -n "${namespace}" "$1" -o yaml; break;;
+      Edit ) kubectl edit statefulset -n "${namespace}" "$1"; break;;
+      Delete ) echo "Are you sure you want to delete statefulset $1 in namespace $namespace? (yes/no)"; read confirm; if [ "$confirm" = "yes" ]; then kubectl delete statefulset -n "${namespace}" "$1"; fi; break;;
+      Restart ) kubectl rollout restart statefulset -n "${namespace}" "$1"; break;;
+    esac
+  done
+}
+
+function job {
+  namespace=$(khelper "$1")
+  kubectl get job -n "${namespace}" "$1" ${@:2}
+
+  echo "What would you like to do with this job?"
+  select action in "Nothing" "Describe" "YAML" "Delete" "Logs"; do
+    case $action in
+      Nothing ) break;;
+      Describe ) kubectl describe job -n "${namespace}" "$1"; break;;
+      YAML ) kubectl get job -n "${namespace}" "$1" -o yaml; break;;
+      Delete ) echo "Are you sure you want to delete job $1 in namespace $namespace? (yes/no)"; read confirm; if [ "$confirm" = "yes" ]; then kubectl delete job -n "${namespace}" "$1"; fi; break;;
+      Logs ) kubectl logs -n "${namespace}" job/"$1"; break;;
+    esac
+  done
+}
+
+function cronjob {
+  namespace=$(khelper "$1")
+  kubectl get cronjob -n "${namespace}" "$1" ${@:2}
+
+  echo "What would you like to do with this cronjob?"
+  select action in "Nothing" "Describe" "YAML" "Edit" "Delete" "Suspend" "Resume" "Trigger"; do
+    case $action in
+      Nothing ) break;;
+      Describe ) kubectl describe cronjob -n "${namespace}" "$1"; break;;
+      YAML ) kubectl get cronjob -n "${namespace}" "$1" -o yaml; break;;
+      Edit ) kubectl edit cronjob -n "${namespace}" "$1"; break;;
+      Delete ) echo "Are you sure you want to delete cronjob $1 in namespace $namespace? (yes/no)"; read confirm; if [ "$confirm" = "yes" ]; then kubectl delete cronjob -n "${namespace}" "$1"; fi; break;;
+      Suspend ) kubectl patch cronjob -n "${namespace}" "$1" -p '{"spec":{"suspend":true}}'; break;;
+      Resume ) kubectl patch cronjob -n "${namespace}" "$1" -p '{"spec":{"suspend":false}}'; break;;
+      Trigger ) kubectl create job --from=cronjob/"$1" "$1-manual-$(date +%s)" -n "${namespace}"; break;;
+    esac
+  done
+}
+
+function replicaset {
+  namespace=$(khelper "$1")
+  kubectl get replicaset -n "${namespace}" "$1" ${@:2}
+
+  echo "What would you like to do with this replicaset?"
+  select action in "Nothing" "Describe" "YAML" "Delete"; do
+    case $action in
+      Nothing ) break;;
+      Describe ) kubectl describe replicaset -n "${namespace}" "$1"; break;;
+      YAML ) kubectl get replicaset -n "${namespace}" "$1" -o yaml; break;;
+      Delete ) echo "Are you sure you want to delete replicaset $1 in namespace $namespace? (yes/no)"; read confirm; if [ "$confirm" = "yes" ]; then kubectl delete replicaset -n "${namespace}" "$1"; fi; break;;
+    esac
+  done
+}
+
+function persistentvolumeclaim {
+  namespace=$(khelper "$1")
+  kubectl get persistentvolumeclaim -n "${namespace}" "$1" ${@:2}
+
+  echo "What would you like to do with this PVC?"
+  select action in "Nothing" "Describe" "YAML" "Edit" "Delete"; do
+    case $action in
+      Nothing ) break;;
+      Describe ) kubectl describe persistentvolumeclaim -n "${namespace}" "$1"; break;;
+      YAML ) kubectl get persistentvolumeclaim -n "${namespace}" "$1" -o yaml; break;;
+      Edit ) kubectl edit persistentvolumeclaim -n "${namespace}" "$1"; break;;
+      Delete ) echo "Are you sure you want to delete PVC $1 in namespace $namespace? (yes/no)"; read confirm; if [ "$confirm" = "yes" ]; then kubectl delete persistentvolumeclaim -n "${namespace}" "$1"; fi; break;;
+    esac
+  done
+}
+
+function persistentvolume {
+  kubectl get persistentvolume "$1" ${@:2}
+
+  echo "What would you like to do with this PV?"
+  select action in "Nothing" "Describe" "YAML" "Edit" "Delete"; do
+    case $action in
+      Nothing ) break;;
+      Describe ) kubectl describe persistentvolume "$1"; break;;
+      YAML ) kubectl get persistentvolume "$1" -o yaml; break;;
+      Edit ) kubectl edit persistentvolume "$1"; break;;
+      Delete ) echo "Are you sure you want to delete PV $1? (yes/no)"; read confirm; if [ "$confirm" = "yes" ]; then kubectl delete persistentvolume "$1"; fi; break;;
+    esac
+  done
+}
+
+function storageclass {
+  kubectl get storageclass "$1" ${@:2}
+
+  echo "What would you like to do with this storageclass?"
+  select action in "Nothing" "Describe" "YAML" "Edit" "Delete"; do
+    case $action in
+      Nothing ) break;;
+      Describe ) kubectl describe storageclass "$1"; break;;
+      YAML ) kubectl get storageclass "$1" -o yaml; break;;
+      Edit ) kubectl edit storageclass "$1"; break;;
+      Delete ) echo "Are you sure you want to delete storageclass $1? (yes/no)"; read confirm; if [ "$confirm" = "yes" ]; then kubectl delete storageclass "$1"; fi; break;;
+    esac
+  done
+}
+
+function networkpolicy {
+  namespace=$(khelper "$1")
+  kubectl get networkpolicy -n "${namespace}" "$1" ${@:2}
+
+  echo "What would you like to do with this network policy?"
+  select action in "Nothing" "Describe" "YAML" "Edit" "Delete"; do
+    case $action in
+      Nothing ) break;;
+      Describe ) kubectl describe networkpolicy -n "${namespace}" "$1"; break;;
+      YAML ) kubectl get networkpolicy -n "${namespace}" "$1" -o yaml; break;;
+      Edit ) kubectl edit networkpolicy -n "${namespace}" "$1"; break;;
+      Delete ) echo "Are you sure you want to delete network policy $1 in namespace $namespace? (yes/no)"; read confirm; if [ "$confirm" = "yes" ]; then kubectl delete networkpolicy -n "${namespace}" "$1"; fi; break;;
+    esac
+  done
+}
+
+function serviceaccount {
+  namespace=$(khelper "$1")
+  kubectl get serviceaccount -n "${namespace}" "$1" ${@:2}
+
+  echo "What would you like to do with this service account?"
+  select action in "Nothing" "Describe" "YAML" "Edit" "Delete"; do
+    case $action in
+      Nothing ) break;;
+      Describe ) kubectl describe serviceaccount -n "${namespace}" "$1"; break;;
+      YAML ) kubectl get serviceaccount -n "${namespace}" "$1" -o yaml; break;;
+      Edit ) kubectl edit serviceaccount -n "${namespace}" "$1"; break;;
+      Delete ) echo "Are you sure you want to delete service account $1 in namespace $namespace? (yes/no)"; read confirm; if [ "$confirm" = "yes" ]; then kubectl delete serviceaccount -n "${namespace}" "$1"; fi; break;;
+    esac
+  done
+}
+
+function namespace {
+  kubectl get namespace "$1" ${@:2}
+
+  echo "What would you like to do with this namespace?"
+  select action in "Nothing" "Describe" "YAML" "Edit" "Delete"; do
+    case $action in
+      Nothing ) break;;
+      Describe ) kubectl describe namespace "$1"; break;;
+      YAML ) kubectl get namespace "$1" -o yaml; break;;
+      Edit ) kubectl edit namespace "$1"; break;;
+      Delete ) echo "Are you sure you want to delete namespace $1? This will delete ALL resources in the namespace! (yes/no)"; read confirm; if [ "$confirm" = "yes" ]; then kubectl delete namespace "$1"; fi; break;;
     esac
   done
 }
