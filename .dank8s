@@ -1,140 +1,41 @@
 function kubehelp {
-  RED="$(tput setaf 1)"
-  GREEN="$(tput setaf 2)"
-  LGREEN="$(tput bold; tput setaf 2)"
-  PURPLE="$(tput setaf 5)"
-  LPURPLE="$(tput bold; tput setaf 5)"
-  YELLOW="$(tput bold; tput setaf 3)"
-  BLUE="$(tput setaf 4)"
-  LBLUE="$(tput bold; tput setaf 4)"
-  NC="$(tput sgr0)"
   BOLD="$(tput bold)"
+  BLUE="$(tput setaf 4)"
+  NC="$(tput sgr0)"
   cat <<EOF
-${BOLD}Kubernetes Shell Helpers:
+${BOLD}Dank Kubernetes Helpers${NC}
 
-${LBLUE}${BOLD}Namespace & Utility:${NC}
+${BLUE}Setup${NC}
+  ns <namespace>              Set kubectl namespace
+  kubeall on|off              Toggle all-namespaces mode
 
-  ns <namespace>
-      Set the current kubectl namespace.
+${BLUE}List Resources${NC}
+  pods|deployments|services|nodes|events|ingresses|endpoints
+  configmaps|secrets|certificates|issuers|orders|daemonsets
+  statefulsets|jobs|cronjobs|replicasets|pvcs|pvs|storageclasses
+  networkpolicies|serviceaccounts|namespaces
 
-  kubeall <on|off>
-      Toggle all-namespaces mode. When on, listing commands show resources from all namespaces by default.
+  Shortcuts: deps|svcs|ings|eps|cms|certs|ds|sts|cjs|rs,
+            netpols|sas|nss|sc
 
-  refresh <command>
-      Clear the screen and run the given command.
+${BLUE}Inspect Resources${NC}
+  pod|deployment|service|node|ingress|endpoint|configmap|secret
+  certificate|issuer|order|daemonset|statefulset|job|cronjob
+  replicaset|pvc|pv|storageclass|networkpolicy|serviceaccount|namespace
 
-${LBLUE}${BOLD}Listing Resources:${NC}
+  Usage: <type> <name>  (auto-detects namespace|shows interactive menu)
+  Shortcuts: dep|svc|ing|ep|cm|cert|ds|sts|cj|rs|netpol|sa
 
-  pods [args...]
-      List pods in the current namespace. Passes any extra args to kubectl.
-  deployments, deps [args...]
-      List deployments in the current namespace. Passes any extra args to kubectl.
-  services, svcs [args...]
-      List services in the current namespace. Passes any extra args to kubectl.
-  nodes [args...]
-      List cluster nodes. Passes any extra args to kubectl.
-  events [args...]
-      List events in the current namespace, sorted by creation time. Passes any extra args to kubectl.
-  ingresses, ings [args...]
-      List ingresses in the current namespace. Passes any extra args to kubectl.
-  endpoints, eps [args...]
-      List endpoints in the current namespace. Passes any extra args to kubectl.
-  configmaps, cms [args...]
-      List configmaps in the current namespace. Passes any extra args to kubectl.
-  secrets [args...]
-      List secrets in the current namespace. Passes any extra args to kubectl.
-  certificates, certs [args...]
-      List certificates in the current namespace. Passes any extra args to kubectl.
-  issuers [args...]
-      List issuers in the current namespace. Passes any extra args to kubectl.
-  orders [args...]
-      List orders in the current namespace. Passes any extra args to kubectl.
-  daemonsets, ds [args...]
-      List daemonsets in the current namespace. Passes any extra args to kubectl.
-  statefulsets, sts [args...]
-      List statefulsets in the current namespace. Passes any extra args to kubectl.
-  jobs [args...]
-      List jobs in the current namespace. Passes any extra args to kubectl.
-  cronjobs, cjs [args...]
-      List cronjobs in the current namespace. Passes any extra args to kubectl.
-  replicasets, rs [args...]
-      List replicasets in the current namespace. Passes any extra args to kubectl.
-  persistentvolumeclaims, pvcs [args...]
-      List PVCs in the current namespace. Passes any extra args to kubectl.
-  persistentvolumes, pvs [args...]
-      List PVs (cluster-wide). Passes any extra args to kubectl.
-  storageclasses, sc [args...]
-      List storage classes (cluster-wide). Passes any extra args to kubectl.
-  networkpolicies, netpols [args...]
-      List network policies in the current namespace. Passes any extra args to kubectl.
-  serviceaccounts, sas [args...]
-      List service accounts in the current namespace. Passes any extra args to kubectl.
-  namespaces, nss [args...]
-      List namespaces (cluster-wide). Passes any extra args to kubectl.
+${BLUE}Actions${NC}
+  exec <pod>                  Open shell in pod
+  rollout <deployment>        Restart deployment
+  logs <pod>                  View pod logs
+  watch <resource|command>    Auto-refresh view (press 'q' to quit)
 
-${LBLUE}${BOLD}Diving Deeper:${NC}
-
-  pod <pod-name> [args...]
-      Show info for a pod (namespace auto-detected). Prompts to describe the pod.
-  deployment, dep <deployment-name> [args...]
-      Show info for a deployment (namespace auto-detected). Prompts to describe the deployment.
-  service, svc <service-name> [args...]
-      Show info for a service (namespace auto-detected). Prompts to describe the service.
-  node <node-name> [args...]
-      Show info for a node. Prompts to describe the node.
-  ingress, ing <ingress-name> [args...]
-      Show info for an ingress (namespace auto-detected). Prompts to describe the ingress.
-  endpoint, ep <endpoint-name> [args...]
-      Show info for an endpoint (namespace auto-detected). Prompts to describe the endpoint.
-  configmap, cm <configmap-name> [args...]
-      Show info for a configmap (namespace auto-detected). Prompts to describe the configmap.
-  secret <secret-name> [args...]
-      Show info for a secret (namespace auto-detected). Prompts to describe the secret.
-  certificate, cert <certificate-name> [args...]
-      Show info for a certificate (namespace auto-detected). Prompts to describe the certificate.
-  issuer <issuer-name> [args...]
-      Show info for an issuer (namespace auto-detected). Prompts to describe the issuer.
-  order <order-name> [args...]
-      Show info for an order (namespace auto-detected). Prompts to describe the order.
-  daemonset, ds <daemonset-name> [args...]
-      Show info for a daemonset (namespace auto-detected). Prompts to describe the daemonset.
-  statefulset, sts <statefulset-name> [args...]
-      Show info for a statefulset (namespace auto-detected). Prompts to describe the statefulset.
-  job <job-name> [args...]
-      Show info for a job (namespace auto-detected). Prompts to describe the job.
-  cronjob, cj <cronjob-name> [args...]
-      Show info for a cronjob (namespace auto-detected). Prompts to describe the cronjob.
-  replicaset, rs <replicaset-name> [args...]
-      Show info for a replicaset (namespace auto-detected). Prompts to describe the replicaset.
-  persistentvolumeclaim, pvc <pvc-name> [args...]
-      Show info for a PVC (namespace auto-detected). Prompts to describe the PVC.
-  persistentvolume, pv <pv-name> [args...]
-      Show info for a PV. Prompts to describe the PV.
-  storageclass <storageclass-name> [args...]
-      Show info for a storage class. Prompts to describe the storage class.
-  networkpolicy, netpol <netpol-name> [args...]
-      Show info for a network policy (namespace auto-detected). Prompts to describe the network policy.
-  serviceaccount, sa <sa-name> [args...]
-      Show info for a service account (namespace auto-detected). Prompts to describe the service account.
-  namespace <namespace-name> [args...]
-      Show info for a namespace. Prompts to describe the namespace.
-
-${LBLUE}${BOLD}Shell & Watch:${NC}
-
-  exec <pod-name>
-      Open a shell in the specified pod (namespace auto-detected). Tries /bin/bash, falls back to /bin/sh if bash is unavailable.
-  watch <resource-type|custom-command>
-      Continuously refresh and display the specified resource or custom command every second, with color output.
-      Supports all resource types (pods, deployments, daemonsets, etc.) or any custom kubectl command.
-
-${LBLUE}${BOLD}Helper Management:${NC}
-
-  unkube
-      Unset all helper functions and aliases.
-  kubehelp
-      Show this help message.
-  kubeall
-      Show current all-namespaces mode status.
+${BLUE}Utilities${NC}
+  refresh <command>           Clear screen and run command
+  kubehelp                    Show this help
+  unkube                      Remove all helpers
 EOF
 }
 
@@ -156,6 +57,7 @@ function unkube {
   unset node
   unset events
   unset exec
+  unset rollout
   unset logs
   unset khelper
   unset kubehelp
@@ -222,6 +124,14 @@ function unkube {
   unset kubeall
   unset KUBEALL
   unset pluralize_resource
+
+  # Remove completions
+  complete -r pod exec logs deployment dep rollout service svc 2>/dev/null
+  complete -r ingress ing endpoint ep configmap cm secret certificate cert 2>/dev/null
+  complete -r issuer order daemonset statefulset sts job cronjob cj 2>/dev/null
+  complete -r replicaset rs persistentvolumeclaim pvc persistentvolume pv 2>/dev/null
+  complete -r storageclass networkpolicy netpol serviceaccount sa 2>/dev/null
+  complete -r node ns namespace watch kubeall 2>/dev/null
 }
 
 function kubeall {
@@ -375,33 +285,29 @@ function watch {
       ;;
   esac
 
-  # Set terminal to non-blocking mode and hide cursor
-  stty -echo -icanon time 0 min 0
-  tput civis
+  # Set terminal to raw mode for input detection
+  stty -echo -icanon
 
   # Trap to restore terminal settings on exit
-  trap 'stty sane; tput cnorm' EXIT INT TERM
+  trap 'stty sane' EXIT INT TERM
 
   while true; do
-    tput clear
-    echo "Watching $1 - Press 'q' to quit"
-    echo
-    bash -ic "$CMD"
+    # Use refresh to clear and run command
+    output=$(tput clear; echo "Watching $1 - Press 'q' to quit"; echo; bash -ic "$CMD")
+    printf '%s' "$output"
 
-    # Check for 'q' keypress
-    if read -n 1 key && [[ "$key" == "q" ]]; then
-      stty sane
-      tput cnorm
-      echo
-      break
+    # Check for 'q' keypress with 1 second timeout
+    if read -t 1 -n 1 key; then
+      if [[ "$key" == "q" ]]; then
+        stty sane
+        echo
+        break
+      fi
     fi
-
-    sleep 1;
   done;
 
   # Restore terminal settings
   stty sane
-  tput cnorm
   trap - EXIT INT TERM
 }
 
@@ -411,6 +317,11 @@ function exec {
     echo "Falling back to /bin/sh..."
     kubectl exec -it -n "${namespace}" "$1" -- /bin/sh
   fi
+}
+
+function rollout {
+  namespace=$(khelper "$1")
+  kubectl rollout restart deployment -n "${namespace}" "$1"
 }
 
 function pods {
@@ -910,4 +821,81 @@ function install-nginx {
     --namespace ingress-nginx \
     --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz
 }
+
+# Bash Completions
+# Completion for functions that take pod names
+_kube_pod_completion() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  local pods=$(kubectl get pods --no-headers 2>/dev/null | awk '{print $1}')
+  COMPREPLY=($(compgen -W "${pods}" -- "${cur}"))
+}
+
+# Completion for functions that take deployment names
+_kube_deployment_completion() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  local deployments=$(kubectl get deployments --no-headers 2>/dev/null | awk '{print $1}')
+  COMPREPLY=($(compgen -W "${deployments}" -- "${cur}"))
+}
+
+# Completion for functions that take service names
+_kube_service_completion() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  local services=$(kubectl get services --no-headers 2>/dev/null | awk '{print $1}')
+  COMPREPLY=($(compgen -W "${services}" -- "${cur}"))
+}
+
+# Completion for functions that take any resource name (searches all namespaces)
+_kube_resource_completion() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  local resource_type="${1:-${FUNCNAME[1]%_completion}}"
+  # Pluralize if needed
+  case "$resource_type" in
+    pod|deployment|service|ingress|endpoint|configmap|secret|certificate|issuer|order|daemonset|statefulset|job|cronjob|replicaset|persistentvolumeclaim|networkpolicy|serviceaccount)
+      resource_type="${resource_type}s"
+      ;;
+  esac
+  local resources=$(kubectl get "$resource_type" -A --no-headers 2>/dev/null | awk '{print $2}')
+  COMPREPLY=($(compgen -W "${resources}" -- "${cur}"))
+}
+
+# Completion for namespace function
+_kube_namespace_completion() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  local namespaces=$(kubectl get namespaces --no-headers 2>/dev/null | awk '{print $1}')
+  COMPREPLY=($(compgen -W "${namespaces}" -- "${cur}"))
+}
+
+# Completion for node function
+_kube_node_completion() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  local nodes=$(kubectl get nodes --no-headers 2>/dev/null | awk '{print $1}')
+  COMPREPLY=($(compgen -W "${nodes}" -- "${cur}"))
+}
+
+# Completion for watch function
+_kube_watch_completion() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  local resources="pods deployments services nodes events ingresses endpoints configmaps secrets certificates issuers orders daemonsets statefulsets jobs cronjobs replicasets persistentvolumeclaims persistentvolumes storageclasses networkpolicies serviceaccounts namespaces"
+  COMPREPLY=($(compgen -W "${resources}" -- "${cur}"))
+}
+
+# Completion for kubeall function
+_kube_kubeall_completion() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  COMPREPLY=($(compgen -W "on off" -- "${cur}"))
+}
+
+# Register completions
+complete -F _kube_pod_completion pod exec logs
+complete -F _kube_deployment_completion deployment dep rollout
+complete -F _kube_service_completion service svc
+complete -F _kube_resource_completion ingress ing endpoint ep configmap cm secret certificate cert issuer order daemonset statefulset sts job cronjob cj replicaset rs persistentvolumeclaim pvc
+complete -F _kube_node_completion node
+complete -F _kube_namespace_completion ns namespace
+complete -F _kube_watch_completion watch
+complete -F _kube_kubeall_completion kubeall
+
+# For cluster-wide resources
+complete -F _kube_node_completion persistentvolume pv
+complete -F _kube_resource_completion storageclass networkpolicy netpol serviceaccount sa
 
