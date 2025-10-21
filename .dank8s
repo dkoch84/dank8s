@@ -1,3 +1,5 @@
+#!/bin/bash
+
 function kubehelp {
   BOLD="$(tput bold)"
   BLUE="$(tput setaf 4)"
@@ -815,11 +817,32 @@ function node {
 }
 
 function install-nginx {
+  local provider="${1:-generic}"
+
+  echo "Installing NGINX Ingress Controller"
+
+  helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx 2>/dev/null
   helm repo update
-  helm install ingress-nginx ingress-nginx/ingress-nginx \
-    --create-namespace \
-    --namespace ingress-nginx \
-    --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz
+
+  case "$provider" in
+    azure|aks)
+      echo "Using Azure/AKS configuration..."
+      helm install ingress-nginx ingress-nginx/ingress-nginx \
+        --create-namespace \
+        --namespace ingress-nginx \
+        --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz
+      ;;
+    *)
+      echo "Using generic configuration..."
+      helm install ingress-nginx ingress-nginx/ingress-nginx \
+        --create-namespace \
+        --namespace ingress-nginx
+      ;;
+  esac
+
+  echo ""
+  echo "NGINX Ingress Controller installed. To check status:"
+  echo "  kubectl get pods -n ingress-nginx"
 }
 
 # Bash Completions
@@ -899,3 +922,20 @@ complete -F _kube_kubeall_completion kubeall
 complete -F _kube_node_completion persistentvolume pv
 complete -F _kube_resource_completion storageclass networkpolicy netpol serviceaccount sa
 
+# Initial state
+echo "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣶⠿⠻⢷⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⡇⠀⠘⠿⢻⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣿⣧⣄⣀⣤⡿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⣿⡿⠉⠉⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣉⡉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⢀⣠⣾⣿⣿⣿⣿⣦⣤⣤⣤⣤⣄⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⣀⣴⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣄⠀⠀⠀⠀
+⠀⢀⣴⣿⣿⣿⣿⡿⠿⠛⠛⠻⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠿⢿⣦⡀⠀⠀
+⠀⣾⣿⣿⣿⣿⠏⠀⠀⠀⠀⠀⠀⠘⢿⣿⣿⣿⣿⣿⣿⡟⠁⠀⠀⠀⠉⢿⡄⠀
+⢸⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠸⡿⠀⢸⣿⣿⣿⣿⣿⣿⣤⡀⠀⠰⣿⠆⢸⡷⠀
+⠸⣿⣿⣿⣿⣿⣧⡀⠀⠀⠀⠀⠀⣠⣿⣿⣿⠁⣠⣤⣄⢈⣿⣆⡀⠀⣠⡾⠃⠀
+⠀⢻⣿⣿⣿⣿⣿⣿⡶⠶⠿⠛⠛⠛⠛⠛⠉⠁⠉⠉⠉⠈⠉⠛⠛⠛⠿⠷⣦⡀
+⠀⠀⠙⢿⣿⣿⠋⠁⠀⣠⣶⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣴⡶⠿⠛⠁
+⠀⠀⠀⠀⠙⠻⣦⣀⠀⠈⠀⠀⠙⣿⡇⠈⠉⠉⠉⠉⣉⣥⣴⢿⡿⠃⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠈⠙⠻⠶⠶⣶⣦⣤⣴⣶⡶⠶⠾⠟⠋⠉⠀⠀⠀⠀⠀⠀⠀⠀"
+kubeall on
