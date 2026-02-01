@@ -13,7 +13,7 @@ _KUBE_CACHE_DIR="/tmp/.dank8s-cache-$$"
 _KUBE_CACHE_TTL=60  # seconds
 
 # Resource action configurations
-declare -A _KUBE_RESOURCE_ACTIONS=(
+declare -gA _KUBE_RESOURCE_ACTIONS=(
   [pod]="Nothing Describe YAML Edit Delete"
   [deployment]="Nothing Describe YAML Edit Delete Restart"
   [service]="Nothing Describe YAML Edit Delete"
@@ -40,7 +40,7 @@ declare -A _KUBE_RESOURCE_ACTIONS=(
 )
 
 # Watch command mappings
-declare -A _KUBE_WATCH_COMMANDS=(
+declare -gA _KUBE_WATCH_COMMANDS=(
   [pods]="kubectl get pods \$KUBEALL --force-colors"
   [deployments]="kubectl get deployments \$KUBEALL --force-colors"
   [services]="kubectl get services \$KUBEALL --force-colors"
@@ -77,12 +77,12 @@ declare -A _KUBE_WATCH_COMMANDS=(
 )
 
 # Cluster-scoped resources (no namespace)
-declare -A _KUBE_CLUSTER_SCOPED=(
+declare -gA _KUBE_CLUSTER_SCOPED=(
   [node]=1 [persistentvolume]=1 [storageclass]=1 [namespace]=1
 )
 
 # Pluralization map
-declare -A _KUBE_PLURALS=(
+declare -gA _KUBE_PLURALS=(
   [ingress]="ingresses" [endpoint]="endpoints" [configmap]="configmaps"
   [secret]="secrets" [pod]="pods" [deployment]="deployments"
   [service]="services" [node]="nodes" [certificate]="certificates"
